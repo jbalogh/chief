@@ -37,10 +37,33 @@ def application(env, start_response):
 
 # So fancy.
 html = """
+<style>
+button {
+  background: red;
+  font-size: 32px;
+  font-family: monospace;
+  margin: 1em 0 0;
+  padding: .2em;
+  border: none;
+  border-radius: 6px;
+  box-shadow: inset 0 0 .3em;
+  text-shadow: 0 0 .3em #fff;
+  cursor: pointer;
+}
+button:hover {
+  font-weight: bold;
+  box-shadow: inset 0 0 .3em,
+                    0 0 1em red;
+}
+button:active {
+  color: white;
+}
+</style>
 <form method="post" action="">
   <input name="zamboni" placeholder="zamboni tag">
   <input name="vendor" placeholder="vendor tag">
   <input name="password" type="password" placeholder="secret">
-  <button>ONWARD AND UPWARD</button>
+  <br>
+  <button>BIG RED BUTTON</button>
 </form>
 """
