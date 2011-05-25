@@ -6,6 +6,8 @@ import settings
 
 deploy = os.path.join(settings.ZAMBONI_DIR, 'scripts/deploy.py')
 
+os.environ['PYTHONUNBUFFERED'] = 'go time'
+
 
 def run(task, output):
     proc = subprocess.Popen('commander %s %s' % (deploy, task),
