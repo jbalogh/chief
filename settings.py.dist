@@ -1,0 +1,9 @@
+# Path to the zamboni root.
+ZAMBONI_DIR = '/Users/jbalogh/dev/zamboni'
+
+# Directory where chief should redirect output. Make sure it exists.
+# Make sure Apache can read this dir so we can see the deploy output.
+OUTPUT_DIR = '/tmp'
+
+# The app requires this secret before taking any action.
+PASSWORD = ''
