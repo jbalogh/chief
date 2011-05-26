@@ -37,6 +37,7 @@ def application(env, start_response):
 
 # So fancy.
 html = """
+<title>CHIEF</title>
 <style>
 button {
   background: red;
