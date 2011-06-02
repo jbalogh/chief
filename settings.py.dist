@@ -7,3 +7,15 @@ OUTPUT_DIR = '/tmp'
 
 # The app requires this secret before taking any action.
 PASSWORD = ''
+
+# Redis connection parameters. Everything is passed directly to redis.Redis, no
+# default settings are added.
+REDIS_BACKENDS = {
+    'master': {
+        'host': 'localhost',
+        'port': 6379,
+        'password': None,
+        'db': 0,
+        'socket_timeout': 0.1,
+    },
+}

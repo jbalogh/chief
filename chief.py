@@ -1,6 +1,9 @@
+import json
 import os
 import subprocess
 import urlparse
+
+import redis as redislib
 
 import settings
 
@@ -16,11 +19,23 @@ def run(task, output):
 
 
 def do_update(zamboni_tag, vendor_tag):
+    def pub(event):
+        redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
+        d = {'event': event, 'zamboni': zamboni_tag, 'vendor': vendor_tag}
+        redis.publish('deploy.amo', json.dumps(d))
+
+    pub('BEGIN')
     yield 'Updating! zamboni: %s -- vendor: %s<br>' % (zamboni_tag, vendor_tag)
+
     output = open(os.path.join(settings.OUTPUT_DIR, zamboni_tag), 'a')
     run('start_update:%s,%s' % (zamboni_tag, vendor_tag), output)
+
+    pub('PUSH')
     yield 'We have the new code!<br>'
+
     run('update_amo', output)
+
+    pub('DONE')
     yield 'All done!'
 
 
