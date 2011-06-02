@@ -18,10 +18,11 @@ def run(task, output):
     proc.communicate()
 
 
-def do_update(zamboni_tag, vendor_tag):
+def do_update(zamboni_tag, vendor_tag, who):
     def pub(event):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
-        d = {'event': event, 'zamboni': zamboni_tag, 'vendor': vendor_tag}
+        d = {'event': event, 'zamboni': zamboni_tag, 'vendor': vendor_tag,
+             'who': who}
         redis.publish('deploy.amo', json.dumps(d))
 
     pub('BEGIN')
@@ -43,9 +44,9 @@ def application(env, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
     if env['REQUEST_METHOD'] == 'POST':
         post = dict(urlparse.parse_qsl(env['wsgi.input'].read()))
-        assert sorted(post.keys()) == ['password', 'vendor', 'zamboni']
+        assert sorted(post.keys()) == ['password', 'vendor', 'who', 'zamboni']
         assert post['password'] == settings.PASSWORD
-        return do_update(post['zamboni'], post['vendor'])
+        return do_update(post['zamboni'], post['vendor'], post['who'])
 
     return html
 
@@ -79,6 +80,7 @@ button:active {
   <input name="zamboni" placeholder="zamboni tag">
   <input name="vendor" placeholder="vendor tag">
   <input name="password" type="password" placeholder="secret">
+  <input name="who" placeholder="identify yourself">
   <br>
   <button>BIG RED BUTTON</button>
 </form>
