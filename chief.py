@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 
 import redis as redislib
@@ -30,7 +31,9 @@ def do_update(zamboni_tag, vendor_tag, who):
     pub('BEGIN')
     yield 'Updating! zamboni: %s -- vendor: %s<br>' % (zamboni_tag, vendor_tag)
 
-    output = open(os.path.join(settings.OUTPUT_DIR, zamboni_tag), 'a')
+    log_file = os.path.join(settings.OUTPUT_DIR,
+                            re.sub('[^A-z0-9]', '.', zamboni_tag)) 
+    output = open(log_file, 'a')
     run('pre_update:%s,%s' % (zamboni_tag, vendor_tag), output)
     pub('PUSH')
     yield 'We have the new code!<br>'
@@ -44,7 +47,7 @@ def do_update(zamboni_tag, vendor_tag, who):
     yield 'All done!'
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         post = request.form
