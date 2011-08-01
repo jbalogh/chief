@@ -29,18 +29,18 @@ def do_update(zamboni_tag, vendor_tag, who):
         redis.publish('deploy.amo', json.dumps(d))
 
     pub('BEGIN')
-    yield 'Updating! zamboni: %s -- vendor: %s<br>' % (zamboni_tag, vendor_tag)
+    yield 'Updating! zamboni: %s -- vendor: %s\n' % (zamboni_tag, vendor_tag)
 
     log_file = os.path.join(settings.OUTPUT_DIR,
                             re.sub('[^A-z0-9]', '.', zamboni_tag)) 
     output = open(log_file, 'a')
     run('pre_update:%s,%s' % (zamboni_tag, vendor_tag), output)
     pub('PUSH')
-    yield 'We have the new code!<br>'
+    yield 'We have the new code!\n'
 
     run('update', output)
     pub('UPDATE')
-    yield "Code has been updated locally!<br>"
+    yield "Code has been updated locally!\n"
 
     run('deploy', output)
     pub('DONE')
