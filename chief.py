@@ -25,7 +25,7 @@ def do_update(zamboni_tag, vendor_tag, who):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
         d = {'event': event, 'zamboni': zamboni_tag, 'vendor': vendor_tag,
              'who': who}
-        redis.publish('deploy.amo', json.dumps(d))
+        redis.publish(settings.PUBSUB_CHANNEL, json.dumps(d))
 
     pub('BEGIN')
     yield 'Updating! zamboni: %s -- vendor: %s\n' % (zamboni_tag, vendor_tag)
