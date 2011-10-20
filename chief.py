@@ -15,7 +15,7 @@ os.environ['PYTHONUNBUFFERED'] = 'go time'
 
 
 def do_update(app_name, app_settings, webapp_tag, who):
-    deploy = os.path.join(app_settings['dir'], 'scripts/update/update.py')
+    deploy = app_settings['script']
     log_dir = os.path.join(settings.OUTPUT_DIR, app_name)
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)

@@ -1,7 +1,7 @@
 # Webapp Configs
 WEBAPPS = {
     'addons.dev': {
-        'dir': '/Users/jbalogh/dev/zamboni', # Path to webapp root
+        'script': '/Users/jbalogh/dev/zamboni/scripts/update/update.py', # Path to commander scripts with pre_update, update, and deploy tasks
         'pubsub_channel': 'deploy.amo', # The is the name of the channel where chief posts events
         'password': '', # The app requires this secret before taking any action.
     },
