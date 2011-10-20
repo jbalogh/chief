@@ -68,4 +68,4 @@ def index(webapp):
                         direct_passthrough=True,
                         mimetype='text/plain')
 
-    return render_template("index.html")
+    return render_template("index.html", app_name=webapp)
