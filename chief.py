@@ -26,12 +26,12 @@ def do_update(app_name, app_settings, webapp_tag, who):
 
     def pub(event):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
-        d = {'event': event, 'zamboni': webapp_tag, 'who': who}
+        d = {'event': event, 'ref': webapp_tag, 'who': who}
         redis.publish(app_settings['pubsub_channel'], json.dumps(d))
 
     try:
         pub('BEGIN')
-        yield 'Updating! zamboni: %s\n' % webapp_tag
+        yield 'Updating! revision: %s\n' % webapp_tag
 
         log_file = os.path.join(log_dir,
                                 re.sub('[^A-z0-9]', '.', webapp_tag))
