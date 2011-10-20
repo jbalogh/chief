@@ -61,7 +61,7 @@ def index(webapp):
 
     if request.method == 'POST':
         post = request.form
-        assert sorted(post.keys()) == ['password', 'who', 'tag']
+        assert sorted(post.keys()) == ['password', 'tag', 'who']
         assert post['password'] == app_settings['password']
         return Response(do_update(webapp, app_settings,
                                   post['tag'], post['who']),
