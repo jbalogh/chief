@@ -1,15 +1,15 @@
-# Path to the zamboni root.
-ZAMBONI_DIR = '/Users/jbalogh/dev/zamboni'
-
-# This is the name of the channel where chief posts events.
-PUBSUB_CHANNEL = 'deploy.amo'
+# Webapp Configs
+WEBAPPS = {
+    'addons.dev': {
+        'dir': '/Users/jbalogh/dev/zamboni', # Path to webapp root
+        'pubsub_channel': 'deploy.amo', # The is the name of the channel where chief posts events
+        'password': '', # The app requires this secret before taking any action.
+    },
+}
 
 # Directory where chief should redirect output. Make sure it exists.
 # Make sure Apache can read this dir so we can see the deploy output.
 OUTPUT_DIR = '/tmp'
-
-# The app requires this secret before taking any action.
-PASSWORD = ''
 
 # Redis connection parameters. Everything is passed directly to redis.Redis, no
 # default settings are added.
