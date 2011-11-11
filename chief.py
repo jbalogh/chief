@@ -7,6 +7,7 @@ import redis as redislib
 from flask import Flask, Response, abort, request, render_template
 
 import settings
+from forms import DeployForm
 
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ app = Flask(__name__)
 os.environ['PYTHONUNBUFFERED'] = 'go time'
 
 
-def do_update(app_name, app_settings, webapp_tag, who):
+def do_update(app_name, app_settings, webapp_ref, who):
     deploy = app_settings['script']
     log_dir = os.path.join(settings.OUTPUT_DIR, app_name)
     if not os.path.isdir(log_dir):
@@ -26,17 +27,17 @@ def do_update(app_name, app_settings, webapp_tag, who):
 
     def pub(event):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
-        d = {'event': event, 'ref': webapp_tag, 'who': who}
+        d = {'event': event, 'ref': webapp_ref, 'who': who}
         redis.publish(app_settings['pubsub_channel'], json.dumps(d))
 
     try:
         pub('BEGIN')
-        yield 'Updating! revision: %s\n' % webapp_tag
+        yield 'Updating! revision: %s\n' % webapp_ref
 
         log_file = os.path.join(log_dir,
-                                re.sub('[^A-z0-9]', '.', webapp_tag))
+                                re.sub('[^A-z0-9]', '.', webapp_ref))
         output = open(log_file, 'a')
-        run('pre_update:%s' % webapp_tag, output)
+        run('pre_update:%s' % webapp_ref, output)
         pub('PUSH')
         yield 'We have the new code!\n'
 
@@ -59,13 +60,13 @@ def index(webapp):
     else:
         app_settings = settings.WEBAPPS[webapp]
 
-    if request.method == 'POST':
-        post = request.form
-        assert sorted(post.keys()) == ['password', 'tag', 'who']
-        assert post['password'] == app_settings['password']
+    form = DeployForm(request.form)
+    if request.method == 'POST' and form.validate():
+        if form.password.data != app_settings['password']:
+            abort(403)
         return Response(do_update(webapp, app_settings,
-                                  post['tag'], post['who']),
+                                  form.ref.data, form.who.data),
                         direct_passthrough=True,
                         mimetype='text/plain')
 
-    return render_template("index.html", app_name=webapp)
+    return render_template("index.html", app_name=webapp, form=form)
