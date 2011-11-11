@@ -1,24 +1,58 @@
 <title>CHIEF - {{ app_name }}</title>
 <style>
-button {
-  background: red;
-  font-size: 32px;
-  font-family: monospace;
-  margin: 1em 0 0;
-  padding: .2em;
-  border: none;
-  border-radius: 6px;
-  box-shadow: inset 0 0 .3em;
-  text-shadow: 0 0 .3em #fff;
-  cursor: pointer;
+body {
+  text-align: center;
 }
-button:hover {
-  font-weight: bold;
-  box-shadow: inset 0 0 .3em,
-                    0 0 1em red;
+button {
+    background: url(/static/bigred.png) no-repeat center center,
+                -moz-linear-gradient(center top , #DB3E36, #8A1F1A) repeat scroll 0 0 transparent;
+    border-radius: 100%;
+    box-shadow: 0 12px 3px rgba(0, 0, 0, 0.2),
+                0 6px 1px rgba(0, 0, 0, 0.8),
+                0 2px 0 rgba(255, 255, 255, 0.5) inset,
+                0 12px 48px rgba(255, 100, 16, 0.8) inset,
+                0 -12px 0 rgba(0, 0, 0, 0.2) inset;
+    color: #FFFFFF;
+    margin-top: 1em;
+    border: 0;
+    display: block;
+    font-size: 48px;
+    height: 220px;
+    letter-spacing: -3px;
+    line-height: 52px;
+    outline: medium none;
+    text-align: center;
+    margin: 1em auto;
+    text-decoration: none;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    width: 220px;
+    position: relative;
+    cursor: pointer;
+}
+button:before {
+    content: '';
+    display: block;
+    width: 217px;
+    height: 220px;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: 100%;
+    -moz-transition: .7s box-shadow ease;
+    box-shadow: 0 0 transparent;
+}
+button:hover:before {
+    box-shadow: 0 0 50px red;
 }
 button:active {
-  color: white;
+    border-radius: 100% 100% 100% 100%;
+    box-shadow: 0 12px 3px rgba(0, 0, 0, 0.2),
+                0 2px 1px rgba(0, 0, 0, 0.8),
+                0 2px 0 rgba(255, 255, 255, 0.5) inset,
+                0 12px 48px rgba(255, 100, 16, 0.8) inset,
+                0 -12px 0 rgba(0, 0, 0, 0.2) inset;
+    top: 4px;
 }
 </style>
 <h1>Hi, I'm the chief of {{ app_name }}.</h1>
@@ -27,5 +61,5 @@ button:active {
   <input name="password" type="password" placeholder="secret">
   <input name="who" placeholder="identify yourself">
   <br>
-  <button>BIG RED BUTTON</button>
+  <button title="BIG RED BUTTON"></button>
 </form>
