@@ -22,8 +22,8 @@ def do_update(app_name, app_settings, webapp_ref, who):
         os.mkdir(log_dir)
 
     def run(task, output):
-        subprocess.check_call('commander %s %s' % (deploy, task),
-                              shell=True, stdout=output, stderr=output)
+        subprocess.check_call(['commander', deploy, task],
+                              stdout=output, stderr=output)
 
     def pub(event):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
