@@ -56,12 +56,15 @@ button:active {
 }
 </style>
 <h1>Hi, I'm the chief of {{ app_name }}.</h1>
-{% if form.errors %}
+{% if form.errors or errors %}
     <ul class="errors">
            {% for field_name, field_errors in form.errors if field_errors %}
                {% for error in field_errors %}
                    <li>{{ form[field_name].label }}: {{ error }}</li>
                {% endfor %}
+           {% endfor %}
+           {% for error in errors %}
+                <li>{{ error }}</li>
            {% endfor %}
     </ul>
 {% endif %}

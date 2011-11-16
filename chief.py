@@ -60,13 +60,16 @@ def index(webapp):
     else:
         app_settings = settings.WEBAPPS[webapp]
 
+    errors = []
     form = DeployForm(request.form)
     if request.method == 'POST' and form.validate():
-        if form.password.data != app_settings['password']:
-            abort(403)
-        return Response(do_update(webapp, app_settings,
-                                  form.ref.data, form.who.data),
-                        direct_passthrough=True,
-                        mimetype='text/plain')
+        if form.password.data == app_settings['password']:
+            return Response(do_update(webapp, app_settings,
+                                      form.ref.data, form.who.data),
+                            direct_passthrough=True,
+                            mimetype='text/plain')
+        else:
+            errors.append("Incorrect password")
 
-    return render_template("index.html", app_name=webapp, form=form)
+    return render_template("index.html", app_name=webapp,
+                           form=form, errors=errors)
