@@ -1,6 +1,6 @@
 # Description
 
-Chief is a simple web interface to assist deployment of web applications.
+Chief is a simple web interface to assist in the deployment of web applications.
 
 # Installation
 
