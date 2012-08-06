@@ -2,6 +2,7 @@ import json
 import os
 import re
 import subprocess
+import time
 
 import redis as redislib
 from flask import Flask, Response, abort, request, render_template
@@ -18,6 +19,7 @@ os.environ['PYTHONUNBUFFERED'] = 'go time'
 def do_update(app_name, app_settings, webapp_ref, who):
     deploy = app_settings['script']
     log_dir = os.path.join(settings.OUTPUT_DIR, app_name)
+    timestamp = int(time.time())
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)
 
@@ -30,7 +32,14 @@ def do_update(app_name, app_settings, webapp_ref, who):
         d = {'event': event, 'ref': webapp_ref, 'who': who}
         redis.publish(app_settings['pubsub_channel'], json.dumps(d))
 
+    def history():
+        redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
+        d = {'user': who, 'ref': webapp_ref}
+        key = "%s:%s" % (app_name, timestamp)
+        redis.hmset(key, d)
+
     try:
+        history()
         pub('BEGIN')
         yield 'Updating! revision: %s\n' % webapp_ref
 
@@ -51,7 +60,6 @@ def do_update(app_name, app_settings, webapp_ref, who):
     except:
         pub('FAIL')
         raise
-
 
 @app.route("/<webapp>", methods=['GET', 'POST'])
 def index(webapp):
