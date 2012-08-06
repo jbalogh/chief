@@ -43,9 +43,10 @@ def do_update(app_name, app_settings, webapp_ref, who):
         pub('BEGIN')
         yield 'Updating! revision: %s\n' % webapp_ref
 
-        log_file = os.path.join(log_dir,
-                                re.sub('[^A-z0-9]', '.', webapp_ref))
+        log_name = "%s.%s" % (re.sub('[^A-z0-9]', '.', webapp_ref), timestamp)
+        log_file = os.path.join(log_dir, log_name)
         output = open(log_file, 'a')
+
         run('pre_update:%s' % webapp_ref, output)
         pub('PUSH')
         yield 'We have the new code!\n'
