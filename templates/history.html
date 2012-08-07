@@ -50,7 +50,7 @@
                 <td>{{ result.user }}</td>
                 <td>{{ result.ref }}</td>
                 <td>{{ result.status }}</td>
-                <td><a href="logs/{{ app_name }}/{{ result.ref }}.{{ result.timestamp }}">view</a></td>
+                <td><a href="logs/{{ result.ref }}.{{ result.timestamp }}">view</a></td>
             </tr>
             {% endfor %}
         </tbody>
