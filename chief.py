@@ -102,4 +102,5 @@ def history(webapp):
     else:
         app_settings = settings.WEBAPPS[webapp]
     results = get_history(webapp, app_settings)
-    return render_template("history.html", results=results)
+    return render_template("history.html", app_name=webapp,
+                           results=results)
