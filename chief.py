@@ -20,6 +20,7 @@ def do_update(app_name, app_settings, webapp_ref, who):
     deploy = app_settings['script']
     log_dir = os.path.join(settings.OUTPUT_DIR, app_name)
     timestamp = int(time.time())
+    datetime = time.strftime("%b %d %Y %H:%M:%S", time.localtime())
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)
 
@@ -32,14 +33,14 @@ def do_update(app_name, app_settings, webapp_ref, who):
         d = {'event': event, 'ref': webapp_ref, 'who': who}
         redis.publish(app_settings['pubsub_channel'], json.dumps(d))
 
-    def history():
+    def history(status):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
-        d = {'user': who, 'ref': webapp_ref}
+        d = {'timestamp':timestamp, 'datetime': datetime, 
+             'status': status, 'user': who, 'ref': webapp_ref}
         key = "%s:%s" % (app_name, timestamp)
         redis.hmset(key, d)
 
     try:
-        history()
         pub('BEGIN')
         yield 'Updating! revision: %s\n' % webapp_ref
 
@@ -57,10 +58,21 @@ def do_update(app_name, app_settings, webapp_ref, who):
 
         run('deploy', output)
         pub('DONE')
+        history('Success')
         yield 'All done!'
     except:
         pub('FAIL')
+        history('Fail')
         raise
+
+def get_history(app_name, app_settings):
+    redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
+    results = []
+    key_prefix = "%s:*" % app_name
+    for history in redis.keys(key_prefix):
+        results.append(redis.hgetall(history))
+    return sorted(results, key=lambda k: k['timestamp'], reverse=True)
+
 
 @app.route("/<webapp>", methods=['GET', 'POST'])
 def index(webapp):
@@ -82,3 +94,12 @@ def index(webapp):
 
     return render_template("index.html", app_name=webapp,
                            form=form, errors=errors)
+
+@app.route("/<webapp>/history", methods=['GET'])
+def history(webapp):
+    if webapp not in settings.WEBAPPS.keys():
+        abort(404)
+    else:
+        app_settings = settings.WEBAPPS[webapp]
+    results = get_history(webapp, app_settings)
+    return render_template("history.html", results=results)
