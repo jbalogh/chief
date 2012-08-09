@@ -24,13 +24,17 @@ def do_update(app_name, app_settings, webapp_ref, who):
     if not os.path.isdir(log_dir):
         os.mkdir(log_dir)
 
+    log_name = "%s.%s" % (re.sub('[^A-z0-9_-]', '.', webapp_ref), timestamp)
+    log_file = os.path.join(log_dir, log_name)
+
     def run(task, output):
         subprocess.check_call(['commander', deploy, task],
                               stdout=output, stderr=output)
 
     def pub(event):
         redis = redislib.Redis(**settings.REDIS_BACKENDS['master'])
-        d = {'event': event, 'ref': webapp_ref, 'who': who}
+        d = {'event': event, 'ref': webapp_ref, 'who': who,
+             'logname': log_name}
         redis.publish(app_settings['pubsub_channel'], json.dumps(d))
 
     def history(status):
@@ -41,12 +45,10 @@ def do_update(app_name, app_settings, webapp_ref, who):
         redis.hmset(key, d)
 
     try:
+        output = open(log_file, 'a')
+
         pub('BEGIN')
         yield 'Updating! revision: %s\n' % webapp_ref
-
-        log_name = "%s.%s" % (re.sub('[^A-z0-9_-]', '.', webapp_ref), timestamp)
-        log_file = os.path.join(log_dir, log_name)
-        output = open(log_file, 'a')
 
         run('pre_update:%s' % webapp_ref, output)
         pub('PUSH')
